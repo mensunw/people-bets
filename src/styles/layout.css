@@ -7,7 +7,7 @@
 /* Sidebar */
 .sidebar {
   width: 260px;
-  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  background: #000000;
   color: white;
   display: flex;
   flex-direction: column;
@@ -15,6 +15,7 @@
   height: 100vh;
   left: 0;
   top: 0;
+  border-right: 1px solid #333333;
 }
 
 .sidebar-header {
@@ -84,7 +85,7 @@
 
 .header {
   background: white;
-  padding: 2.375rem 2rem 1.25rem 2rem;
+  padding: 2.5rem 2rem 1.25rem 2rem;
   border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
@@ -118,12 +119,13 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #000000;
   color: white;
   padding: 0.625rem 1.25rem;
   border-radius: 25px;
   font-weight: 600;
   font-size: 1rem;
+  border: 2px solid #333333;
 }
 
 .currency-icon {

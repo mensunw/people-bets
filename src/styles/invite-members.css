@@ -36,19 +36,19 @@
 
 .user-item:hover {
   background: #edf2f7;
-  border-color: #667eea;
+  border-color: #000000;
 }
 
 .user-item.selected {
-  background: #e6f0ff;
-  border-color: #667eea;
+  background: #f7fafc;
+  border-color: #000000;
 }
 
 .user-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #000000;
   color: white;
   display: flex;
   align-items: center;
@@ -64,7 +64,7 @@
 }
 
 .check-icon {
-  color: #667eea;
+  color: #000000;
   font-size: 1.25rem;
   font-weight: 700;
 }
@@ -72,11 +72,12 @@
 .selected-count {
   text-align: center;
   padding: 0.75rem;
-  background: #e6f0ff;
+  background: #f7fafc;
   border-radius: 8px;
-  color: #667eea;
+  color: #000000;
   font-weight: 600;
   margin-top: 1.5rem;
+  border: 2px solid #e2e8f0;
 }
 
 .loading-spinner,

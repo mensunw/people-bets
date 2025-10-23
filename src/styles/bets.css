@@ -34,26 +34,26 @@
 }
 
 .filter-buttons button {
-  padding: 0.5rem 1rem;
+  padding: 0.625rem 1.25rem;
   background: white;
   border: 2px solid #e2e8f0;
   border-radius: 8px;
-  color: #718096;
+  color: #4a5568;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
 }
 
 .filter-buttons button:hover {
-  border-color: #cbd5e0;
+  border-color: #000000;
   background: #f7fafc;
 }
 
 .filter-buttons button.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #000000;
   color: white;
-  border-color: #667eea;
+  border-color: #000000;
 }
 
 /* Bets Grid */
@@ -77,9 +77,9 @@
 }
 
 .bet-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #000000;
 }
 
 .bet-card-header {
@@ -111,18 +111,18 @@
 }
 
 .status-badge.open {
-  background: #48bb78;
+  background: #000000;
   color: white;
 }
 
 .status-badge.closed {
-  background: #ed8936;
+  background: #666666;
   color: white;
 }
 
 .status-badge.resolved {
-  background: #4299e1;
-  color: white;
+  background: #cccccc;
+  color: #000000;
 }
 
 .bet-title {

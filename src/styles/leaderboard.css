@@ -20,12 +20,12 @@
 }
 
 .leaderboard-tabs .tab:hover {
-  color: #667eea;
+  color: #000000;
 }
 
 .leaderboard-tabs .tab.active {
-  color: #667eea;
-  border-bottom-color: #667eea;
+  color: #000000;
+  border-bottom-color: #000000;
 }
 
 .leaderboard-list {
@@ -47,7 +47,7 @@
 
 .leaderboard-item:hover {
   background: #edf2f7;
-  border-color: #667eea;
+  border-color: #000000;
 }
 
 .leaderboard-rank {
@@ -68,7 +68,7 @@
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #000000;
   color: white;
   display: flex;
   align-items: center;

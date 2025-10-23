@@ -92,8 +92,8 @@
 .modal-content .form-group input:focus,
 .modal-content .form-group textarea:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #000000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
 }
 
 .modal-content .form-group input:disabled,
@@ -120,7 +120,7 @@
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #667eea;
+  accent-color: #000000;
   margin-top: 2px;
   flex-shrink: 0;
 }

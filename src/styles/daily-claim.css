@@ -1,10 +1,10 @@
 /* Daily Claim Card */
 .daily-claim-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #000000;
   color: white;
   padding: 2rem;
   border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  border: 2px solid #333333;
   display: flex;
   align-items: center;
   gap: 1.5rem;
@@ -77,15 +77,14 @@
 .claim-button {
   padding: 1rem 2rem;
   background: white;
-  color: #667eea;
-  border: none;
+  color: #000000;
+  border: 2px solid #ffffff;
   border-radius: 12px;
   font-weight: 700;
   font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.3s;
   z-index: 1;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .claim-button.available:hover {

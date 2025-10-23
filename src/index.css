@@ -3,6 +3,24 @@
   line-height: 1.5;
   font-weight: 400;
 
+  /* Neon Blue/Purple Theme Colors */
+  --primary-cyan: #00d4ff;
+  --primary-blue: #0099ff;
+  --primary-purple: #a855f7;
+  --primary-dark-purple: #7c3aed;
+  --gradient-start: #00d4ff;
+  --gradient-end: #a855f7;
+
+  /* Background Colors */
+  --bg-light: #f7fafc;
+  --bg-dark: #0a0a1a;
+  --bg-card: #ffffff;
+
+  /* Text Colors */
+  --text-primary: #1a202c;
+  --text-secondary: #718096;
+  --text-light: rgba(255, 255, 255, 0.9);
+
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;

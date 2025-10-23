@@ -15,8 +15,8 @@
 
 .search-input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #000000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
 }
 
 /* Groups Section */
@@ -49,9 +49,9 @@
 }
 
 .group-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #000000;
 }
 
 .group-card-header {
@@ -150,20 +150,21 @@
 
 /* Join Button */
 .btn-join {
-  padding: 0.5rem 1rem;
-  background: #667eea;
+  padding: 0.625rem 1.25rem;
+  background: #000000;
   color: white;
-  border: none;
-  border-radius: 6px;
+  border: 2px solid #000000;
+  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
 }
 
 .btn-join:hover:not(:disabled) {
-  background: #764ba2;
-  transform: scale(1.05);
+  background: #ffffff;
+  color: #000000;
+  transform: translateY(-2px);
 }
 
 .btn-join:disabled {
