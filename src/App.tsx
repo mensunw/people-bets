@@ -6,6 +6,7 @@ import { SignUp } from './pages/SignUp';
 import { Home } from './pages/Home';
 import { MyBets } from './pages/MyBets';
 import { Groups } from './pages/Groups';
+import { GroupDetail } from './pages/GroupDetail';
 import { Profile } from './pages/Profile';
 import './styles/auth.css';
 
@@ -37,6 +38,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Groups />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/groups/:id"
+            element={
+              <ProtectedRoute>
+                <GroupDetail />
               </ProtectedRoute>
             }
           />

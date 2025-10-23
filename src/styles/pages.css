@@ -26,6 +26,13 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+.welcome-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+
 .welcome-section h2 {
   margin: 0 0 0.5rem 0;
   color: #1a202c;

@@ -99,6 +99,7 @@ A betting platform where users can create and participate in "Over or Under" bet
 - Implement form validation for both pages
 - Add error handling and loading states
 - Implement redirect logic after successful auth
+- Waits for user to click on confirmation email
 
 ### 3.3 Protected Routes
 - Create ProtectedRoute component

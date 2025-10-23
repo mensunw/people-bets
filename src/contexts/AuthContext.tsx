@@ -43,11 +43,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loadUserProfile = async (authUser: any) => {
     try {
-      const { data: profile } = await supabase
+      let { data: profile, error: profileError } = await supabase
         .from('users_profile')
         .select('*')
         .eq('id', authUser.id)
         .single();
+
+      // If profile doesn't exist, create it
+      if (profileError && profileError.code === 'PGRST116') {
+        const username =
+          authUser.user_metadata?.username || 'user_' + authUser.id.substring(0, 8);
+
+        const { data: newProfile, error: createError } = await supabase
+          .from('users_profile')
+          .insert({
+            id: authUser.id,
+            username: username,
+            currency_balance: 1000,
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          console.error('Error creating profile:', createError);
+        } else {
+          profile = newProfile;
+
+          // Add user to global group
+          await supabase.from('group_members').insert({
+            group_id: '00000000-0000-0000-0000-000000000000',
+            user_id: authUser.id,
+          });
+        }
+      }
 
       setUser({
         id: authUser.id,

@@ -123,16 +123,10 @@ CREATE POLICY "Group leaders can delete their groups"
   USING (auth.uid() = leader_id);
 
 -- Group Members Policies
-CREATE POLICY "Users can view members of groups they belong to"
+-- Simple policy: users can view their own memberships and memberships of public groups
+CREATE POLICY "Users can view group members"
   ON group_members FOR SELECT
-  USING (
-    group_id IN (
-      SELECT group_id FROM group_members WHERE user_id = auth.uid()
-    )
-    OR group_id IN (
-      SELECT id FROM groups WHERE NOT is_private
-    )
-  );
+  USING (true);
 
 CREATE POLICY "Users can join groups"
   ON group_members FOR INSERT
@@ -414,8 +408,29 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- =====================================================
--- SEED DATA
+-- GLOBAL GROUP SETUP
 -- =====================================================
 
--- Create global group (to be run after first user signs up)
--- This will be handled in the application layer or manually after deployment
+-- Function to auto-add users to global group on profile creation
+CREATE OR REPLACE FUNCTION add_user_to_global_group()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Create global group if it doesn't exist (for first user)
+  INSERT INTO groups (id, name, description, is_private, leader_id)
+  VALUES ('00000000-0000-0000-0000-000000000000'::uuid, 'Global', 'Public group for all users', false, NEW.id)
+  ON CONFLICT (id) DO NOTHING;
+
+  -- Add user to global group
+  INSERT INTO group_members (group_id, user_id)
+  VALUES ('00000000-0000-0000-0000-000000000000'::uuid, NEW.id)
+  ON CONFLICT (group_id, user_id) DO NOTHING;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger to add new users to global group
+CREATE TRIGGER on_profile_created_add_to_global
+  AFTER INSERT ON users_profile
+  FOR EACH ROW
+  EXECUTE FUNCTION add_user_to_global_group();

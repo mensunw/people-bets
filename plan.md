@@ -11,20 +11,33 @@ A betting platform where users can create and participate in "Over or Under" bet
 
 ## Phase 3: Authentication System (complete)
 
-## Phase 4: Core Layout & Navigation
+## Phase 4: Core Layout & Navigation (complete)
 
-### 4.1 App Layout
-- Create main layout component with navigation
-- Implement responsive sidebar/navbar
-- Add user profile display in header
-- Show currency balance in header
-- Add logout functionality
+## Phase 5: Daily Currency Claim Feature (complete)
 
-### 4.2 Navigation Structure
-- Home/Dashboard page
-- My Bets page
-- Groups page
-- Profile page
-- Create Bet page (modal or separate page)
+## Phase 6: Groups System (complete)
+
+## Phase 7: Bet Creation System
+
+### 7.1 Create Bet UI
+- Create bet creation form/modal
+- Implement bet type selector with "Over or Under" active
+- Add placeholder buttons for future bet types (grayed out, "Coming Soon" label)
+- Style to clearly show which options are available vs coming soon
+
+### 7.2 Over or Under Bet Form
+- Title input field (required)
+- Description textarea (required)
+- Target number input (required, numeric validation)
+- Betting window end datetime picker (required, must be future)
+- Group selector dropdown (show only groups where user is leader, plus global)
+- Form validation for all required fields
+
+### 7.3 Bet Creation Logic
+- Validate user is group leader (if private group selected)
+- Create bet record in database
+- Set initial status as 'open'
+- Redirect to bet detail page or show success message
+- Handle errors gracefully
 
 ---
