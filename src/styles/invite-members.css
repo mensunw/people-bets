@@ -1,0 +1,91 @@
+.modal-body {
+  padding: 2rem;
+}
+
+.form-hint {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #718096;
+}
+
+.user-search-results {
+  min-height: 200px;
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: 1.5rem;
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f7fafc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.user-item:hover {
+  background: #edf2f7;
+  border-color: #667eea;
+}
+
+.user-item.selected {
+  background: #e6f0ff;
+  border-color: #667eea;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-name {
+  flex: 1;
+  font-weight: 600;
+  color: #1a202c;
+}
+
+.check-icon {
+  color: #667eea;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.selected-count {
+  text-align: center;
+  padding: 0.75rem;
+  background: #e6f0ff;
+  border-radius: 8px;
+  color: #667eea;
+  font-weight: 600;
+  margin-top: 1.5rem;
+}
+
+.loading-spinner,
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #718096;
+}
+
+.empty-state p {
+  margin: 0;
+}

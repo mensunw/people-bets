@@ -30,6 +30,9 @@ export function CreateGroupModal({ isOpen, onClose, onSuccess }: CreateGroupModa
 
     try {
       // Create group
+      console.log('Creating group with user id:', user?.id);
+      console.log('Auth user:', await supabase.auth.getUser());
+
       const { data: group, error: groupError } = await supabase
         .from('groups')
         .insert({
@@ -41,15 +44,11 @@ export function CreateGroupModal({ isOpen, onClose, onSuccess }: CreateGroupModa
         .select()
         .single();
 
+      console.log('Group creation result:', { group, error: groupError });
+
       if (groupError) throw groupError;
 
-      // Add creator to group members
-      const { error: memberError } = await supabase.from('group_members').insert({
-        group_id: group.id,
-        user_id: user?.id,
-      });
-
-      if (memberError) throw memberError;
+      // Creator is automatically added to group_members by database trigger
 
       // Reset form
       setName('');

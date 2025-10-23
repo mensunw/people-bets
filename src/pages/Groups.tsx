@@ -24,7 +24,6 @@ export function Groups() {
     <Layout>
       <div className="page-container">
         <div className="page-header">
-          <h2>Groups</h2>
           <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
             Create Group
           </button>

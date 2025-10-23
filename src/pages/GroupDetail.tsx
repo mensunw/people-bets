@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { BetCard } from '../components/BetCard';
+import { InviteMembersModal } from '../components/InviteMembersModal';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import type { Group, UserProfile } from '../types/index';
 import '../styles/pages.css';
+import '../styles/invite-members.css';
 
 interface GroupMemberWithProfile {
   id: string;
@@ -23,6 +25,7 @@ export function GroupDetail() {
   const [bets, setBets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [leaving, setLeaving] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   useEffect(() => {
     fetchGroupDetails();
@@ -189,7 +192,14 @@ export function GroupDetail() {
         </div>
 
         <div className="section">
-          <h3>Members ({members.length})</h3>
+          <div className="section-header">
+            <h3>Members ({members.length})</h3>
+            {isLeader && (
+              <button onClick={() => setIsInviteModalOpen(true)} className="btn-primary">
+                Invite Members
+              </button>
+            )}
+          </div>
           <div className="members-list">
             {members.map((member) => (
               <div key={member.id} className="member-item">
@@ -226,6 +236,16 @@ export function GroupDetail() {
             </div>
           )}
         </div>
+
+        <InviteMembersModal
+          isOpen={isInviteModalOpen}
+          onClose={() => setIsInviteModalOpen(false)}
+          groupId={group.id}
+          groupName={group.name}
+          onSuccess={() => {
+            fetchGroupDetails();
+          }}
+        />
       </div>
     </Layout>
   );

@@ -20,12 +20,23 @@
 .sidebar-header {
   padding: 2rem 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sidebar-header .logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
 }
 
 .sidebar-header h2 {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
+  line-height: 1;
 }
 
 .sidebar-nav {
@@ -73,7 +84,7 @@
 
 .header {
   background: white;
-  padding: 1.25rem 2rem;
+  padding: 2.375rem 2rem 1.25rem 2rem;
   border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
@@ -90,9 +101,10 @@
 
 .page-title {
   margin: 0;
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   color: #1a202c;
   font-weight: 700;
+  line-height: 1;
 }
 
 .header-right {

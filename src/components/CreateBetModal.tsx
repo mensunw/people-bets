@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import type { GroupWithMemberCount } from '../types/index';
 import '../styles/modal.css';
 import '../styles/create-bet.css';
@@ -14,6 +15,7 @@ type BetType = 'over_or_under' | 'multiple_choice' | 'yes_no';
 
 export function CreateBetModal({ isOpen, onClose }: CreateBetModalProps) {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const [selectedBetType, setSelectedBetType] = useState<BetType>('over_or_under');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -134,10 +136,10 @@ export function CreateBetModal({ isOpen, onClose }: CreateBetModalProps) {
       setTargetNumber('');
       setBettingWindowEnd('');
       setSelectedBetType('over_or_under');
-      onClose();
 
-      // Navigate to bet detail (we'll create this page later)
-      alert('Bet created successfully!');
+      // Close modal and show success toast
+      onClose();
+      showToast('Bet created successfully!', 'success');
     } catch (err: any) {
       console.error('Error creating bet:', err);
       setError(err.message || 'Failed to create bet');

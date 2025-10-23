@@ -26,6 +26,7 @@ export function Layout({ children }: LayoutProps) {
     <div className="layout">
       <aside className="sidebar">
         <div className="sidebar-header">
+          <img src="/icon.png" alt="People Bets Logo" className="logo" />
           <h2>People Bets</h2>
         </div>
 
@@ -45,6 +46,13 @@ export function Layout({ children }: LayoutProps) {
             <span className="nav-icon">👥</span>
             <span>Groups</span>
           </Link>
+          <Link
+            to="/leaderboard"
+            className={isActive('/leaderboard') ? 'nav-item active' : 'nav-item'}
+          >
+            <span className="nav-icon">🏆</span>
+            <span>Leaderboard</span>
+          </Link>
           <Link to="/profile" className={isActive('/profile') ? 'nav-item active' : 'nav-item'}>
             <span className="nav-icon">👤</span>
             <span>Profile</span>
@@ -59,6 +67,7 @@ export function Layout({ children }: LayoutProps) {
               {location.pathname === '/' && 'Dashboard'}
               {location.pathname === '/my-bets' && 'My Bets'}
               {location.pathname === '/groups' && 'Groups'}
+              {location.pathname === '/leaderboard' && 'Leaderboard'}
               {location.pathname === '/profile' && 'Profile'}
             </h1>
           </div>

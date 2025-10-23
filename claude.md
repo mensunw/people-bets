@@ -215,7 +215,8 @@ A betting platform where users can create and participate in "Over or Under" bet
 - Past bets with won/lost status
 - Profit and return multiplier display
 
----
+### Phase 12: Leaderboard
+- The leaderboard system tracks and displays user betting statistics including wins, losses, profit, and streaks.
 
 ## Database Functions
 

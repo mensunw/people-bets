@@ -99,6 +99,17 @@
   font-size: 1.25rem;
 }
 
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-header h3 {
+  margin: 0;
+}
+
 /* Empty State */
 .empty-state {
   text-align: center;

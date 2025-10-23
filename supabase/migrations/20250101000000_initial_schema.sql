@@ -60,6 +60,24 @@ CREATE TABLE user_bets (
   UNIQUE(bet_id, user_id)
 );
 
+-- Leaderboard Table
+CREATE TABLE leaderboard (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users_profile(id) ON DELETE CASCADE,
+  username TEXT NOT NULL,
+  total_bets INTEGER DEFAULT 0,
+  total_wins INTEGER DEFAULT 0,
+  total_losses INTEGER DEFAULT 0,
+  win_rate DECIMAL(5,2) DEFAULT 0,
+  total_wagered INTEGER DEFAULT 0,
+  total_winnings INTEGER DEFAULT 0,
+  net_profit INTEGER DEFAULT 0,
+  current_streak INTEGER DEFAULT 0,
+  best_streak INTEGER DEFAULT 0,
+  last_updated TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id)
+);
+
 -- =====================================================
 -- INDEXES
 -- =====================================================
@@ -75,6 +93,10 @@ CREATE INDEX idx_bets_status ON bets(status);
 CREATE INDEX idx_bets_betting_window_end ON bets(betting_window_end);
 CREATE INDEX idx_user_bets_bet_id ON user_bets(bet_id);
 CREATE INDEX idx_user_bets_user_id ON user_bets(user_id);
+CREATE INDEX idx_leaderboard_net_profit ON leaderboard(net_profit DESC);
+CREATE INDEX idx_leaderboard_win_rate ON leaderboard(win_rate DESC);
+CREATE INDEX idx_leaderboard_total_wins ON leaderboard(total_wins DESC);
+CREATE INDEX idx_leaderboard_current_streak ON leaderboard(current_streak DESC);
 
 -- =====================================================
 -- ROW LEVEL SECURITY POLICIES
@@ -86,6 +108,7 @@ ALTER TABLE groups ENABLE ROW LEVEL SECURITY;
 ALTER TABLE group_members ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_bets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE leaderboard ENABLE ROW LEVEL SECURITY;
 
 -- Users Profile Policies
 CREATE POLICY "Users can view all profiles"
@@ -101,14 +124,10 @@ CREATE POLICY "Users can insert their own profile"
   WITH CHECK (auth.uid() = id);
 
 -- Groups Policies
-CREATE POLICY "Users can view groups they are members of"
+CREATE POLICY "Authenticated users can view all groups"
   ON groups FOR SELECT
-  USING (
-    NOT is_private
-    OR id IN (
-      SELECT group_id FROM group_members WHERE user_id = auth.uid()
-    )
-  );
+  TO authenticated
+  USING (true);
 
 CREATE POLICY "Group leaders can update their groups"
   ON groups FOR UPDATE
@@ -128,9 +147,14 @@ CREATE POLICY "Users can view group members"
   ON group_members FOR SELECT
   USING (true);
 
-CREATE POLICY "Users can join groups"
+CREATE POLICY "Users can join groups or be invited by leaders"
   ON group_members FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK (
+    auth.uid() = user_id
+    OR group_id IN (
+      SELECT id FROM groups WHERE leader_id = auth.uid()
+    )
+  );
 
 CREATE POLICY "Users can leave groups"
   ON group_members FOR DELETE
@@ -179,6 +203,11 @@ CREATE POLICY "Users can view bets on bets they can see"
 CREATE POLICY "Users can place bets"
   ON user_bets FOR INSERT
   WITH CHECK (auth.uid() = user_id);
+
+-- Leaderboard Policies
+CREATE POLICY "Anyone can view leaderboard"
+  ON leaderboard FOR SELECT
+  USING (true);
 
 -- =====================================================
 -- TRIGGERS
@@ -246,6 +275,21 @@ CREATE TRIGGER on_bet_placed
   AFTER INSERT ON user_bets
   FOR EACH ROW
   EXECUTE FUNCTION deduct_bet_amount();
+
+-- Trigger to automatically add group creator to group_members
+CREATE OR REPLACE FUNCTION add_creator_to_group()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO group_members (group_id, user_id)
+  VALUES (NEW.id, NEW.leader_id);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_group_created
+  AFTER INSERT ON groups
+  FOR EACH ROW
+  EXECUTE FUNCTION add_creator_to_group();
 
 -- =====================================================
 -- FUNCTIONS
@@ -434,3 +478,158 @@ CREATE TRIGGER on_profile_created_add_to_global
   AFTER INSERT ON users_profile
   FOR EACH ROW
   EXECUTE FUNCTION add_user_to_global_group();
+
+-- Function to update leaderboard for all users
+CREATE OR REPLACE FUNCTION update_leaderboard()
+RETURNS JSONB AS $$
+DECLARE
+  user_record RECORD;
+  updated_count INTEGER := 0;
+BEGIN
+  -- Loop through all users who have placed bets
+  FOR user_record IN
+    SELECT DISTINCT u.id, u.username
+    FROM users_profile u
+    WHERE EXISTS (SELECT 1 FROM user_bets WHERE user_id = u.id)
+  LOOP
+    -- Calculate stats for this user
+    DECLARE
+      stats RECORD;
+      streak_data RECORD;
+    BEGIN
+      -- Get win/loss stats
+      SELECT
+        COUNT(*) as total_bets,
+        COUNT(*) FILTER (WHERE b.status = 'resolved' AND b.winning_side = ub.side) as wins,
+        COUNT(*) FILTER (WHERE b.status = 'resolved' AND b.winning_side != ub.side) as losses,
+        COALESCE(SUM(ub.amount), 0) as total_wagered
+      INTO stats
+      FROM user_bets ub
+      JOIN bets b ON b.id = ub.bet_id
+      WHERE ub.user_id = user_record.id;
+
+      -- Calculate total winnings (proportional distribution)
+      DECLARE
+        total_winnings INTEGER := 0;
+        bet_rec RECORD;
+      BEGIN
+        FOR bet_rec IN
+          SELECT ub.bet_id, ub.amount, ub.side, b.winning_side
+          FROM user_bets ub
+          JOIN bets b ON b.id = ub.bet_id
+          WHERE ub.user_id = user_record.id AND b.status = 'resolved'
+        LOOP
+          IF bet_rec.winning_side = bet_rec.side THEN
+            -- User won this bet, calculate winnings
+            DECLARE
+              total_pot INTEGER;
+              winning_side_total INTEGER;
+            BEGIN
+              SELECT COALESCE(SUM(amount), 0) INTO total_pot
+              FROM user_bets WHERE bet_id = bet_rec.bet_id;
+
+              SELECT COALESCE(SUM(amount), 0) INTO winning_side_total
+              FROM user_bets WHERE bet_id = bet_rec.bet_id AND side = bet_rec.winning_side;
+
+              IF winning_side_total > 0 THEN
+                total_winnings := total_winnings + FLOOR((bet_rec.amount::NUMERIC / winning_side_total) * total_pot);
+              END IF;
+            END;
+          END IF;
+        END LOOP;
+      END;
+
+      -- Calculate current and best streak
+      DECLARE
+        current_streak INTEGER := 0;
+        best_streak INTEGER := 0;
+        temp_streak INTEGER := 0;
+        bet_outcome RECORD;
+      BEGIN
+        FOR bet_outcome IN
+          SELECT
+            CASE WHEN b.winning_side = ub.side THEN 1 ELSE 0 END as won
+          FROM user_bets ub
+          JOIN bets b ON b.id = ub.bet_id
+          WHERE ub.user_id = user_record.id AND b.status = 'resolved'
+          ORDER BY b.resolved_at DESC
+        LOOP
+          IF bet_outcome.won = 1 THEN
+            temp_streak := temp_streak + 1;
+            IF temp_streak > best_streak THEN
+              best_streak := temp_streak;
+            END IF;
+          ELSE
+            temp_streak := 0;
+          END IF;
+        END LOOP;
+
+        current_streak := temp_streak;
+      END;
+
+      -- Calculate win rate
+      DECLARE
+        win_rate DECIMAL(5,2) := 0;
+        resolved_bets INTEGER;
+      BEGIN
+        SELECT COUNT(*) INTO resolved_bets
+        FROM user_bets ub
+        JOIN bets b ON b.id = ub.bet_id
+        WHERE ub.user_id = user_record.id AND b.status = 'resolved';
+
+        IF resolved_bets > 0 THEN
+          win_rate := (stats.wins::DECIMAL / resolved_bets) * 100;
+        END IF;
+      END;
+
+      -- Upsert leaderboard entry
+      INSERT INTO leaderboard (
+        user_id,
+        username,
+        total_bets,
+        total_wins,
+        total_losses,
+        win_rate,
+        total_wagered,
+        total_winnings,
+        net_profit,
+        current_streak,
+        best_streak,
+        last_updated
+      ) VALUES (
+        user_record.id,
+        user_record.username,
+        stats.total_bets,
+        stats.wins,
+        stats.losses,
+        win_rate,
+        stats.total_wagered,
+        total_winnings,
+        total_winnings - stats.total_wagered,
+        current_streak,
+        best_streak,
+        NOW()
+      )
+      ON CONFLICT (user_id) DO UPDATE SET
+        username = EXCLUDED.username,
+        total_bets = EXCLUDED.total_bets,
+        total_wins = EXCLUDED.total_wins,
+        total_losses = EXCLUDED.total_losses,
+        win_rate = EXCLUDED.win_rate,
+        total_wagered = EXCLUDED.total_wagered,
+        total_winnings = EXCLUDED.total_winnings,
+        net_profit = EXCLUDED.net_profit,
+        current_streak = EXCLUDED.current_streak,
+        best_streak = EXCLUDED.best_streak,
+        last_updated = EXCLUDED.last_updated;
+
+      updated_count := updated_count + 1;
+    END;
+  END LOOP;
+
+  RETURN jsonb_build_object(
+    'success', true,
+    'updated_users', updated_count
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

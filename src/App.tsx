@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Login } from './pages/Login';
 import { SignUp } from './pages/SignUp';
@@ -9,12 +10,15 @@ import { Groups } from './pages/Groups';
 import { GroupDetail } from './pages/GroupDetail';
 import { BetDetail } from './pages/BetDetail';
 import { Profile } from './pages/Profile';
+import { Leaderboard } from './pages/Leaderboard';
 import './styles/auth.css';
+import './styles/toast.css';
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <ToastProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
@@ -66,8 +70,17 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/leaderboard"
+            element={
+              <ProtectedRoute>
+                <Leaderboard />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
   );
