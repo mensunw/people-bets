@@ -248,6 +248,104 @@
   box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
 }
 
+/* Active Bets List */
+.active-bets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* History List */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  background: #f7fafc;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.history-item:hover {
+  background: #edf2f7;
+  border-color: #667eea;
+}
+
+.history-main {
+  flex: 1;
+}
+
+.history-title {
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.history-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: #718096;
+}
+
+.history-side {
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+.history-side.over {
+  background: #48bb78;
+  color: white;
+}
+
+.history-side.under {
+  background: #f56565;
+  color: white;
+}
+
+.history-amount {
+  font-weight: 600;
+  color: #667eea;
+}
+
+.history-date {
+  color: #a0aec0;
+}
+
+.history-outcome {
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.history-outcome.won {
+  background: #48bb78;
+  color: white;
+}
+
+.history-outcome.lost {
+  background: #f56565;
+  color: white;
+}
+
+.history-outcome.pending {
+  background: #ed8936;
+  color: white;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .page-header {
@@ -284,5 +382,15 @@
 
   .tab {
     white-space: nowrap;
+  }
+
+  .history-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .history-meta {
+    flex-wrap: wrap;
   }
 }

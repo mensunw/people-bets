@@ -13,10 +13,10 @@ export function DailyClaim() {
   const handleClaim = async () => {
     const result = await claimCurrency();
 
-    if (result.success) {
+    if (result?.success) {
       setNotification({
         show: true,
-        message: `Successfully claimed ${result.amount} currency!`,
+        message: `Successfully claimed ${result.amount || 0} currency!`,
         type: 'success',
       });
 
@@ -26,7 +26,7 @@ export function DailyClaim() {
     } else {
       setNotification({
         show: true,
-        message: result.message || 'Failed to claim currency',
+        message: result?.message || 'Failed to claim currency',
         type: 'error',
       });
 

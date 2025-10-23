@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
+import { BetCard } from '../components/BetCard';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import type { Group, UserProfile } from '../types/index';
@@ -19,6 +20,7 @@ export function GroupDetail() {
   const navigate = useNavigate();
   const [group, setGroup] = useState<Group | null>(null);
   const [members, setMembers] = useState<GroupMemberWithProfile[]>([]);
+  const [bets, setBets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [leaving, setLeaving] = useState(false);
 
@@ -60,6 +62,41 @@ export function GroupDetail() {
       if (membersError) throw membersError;
 
       setMembers(membersData as any);
+
+      // Fetch bets for this group
+      const { data: betsData, error: betsError } = await supabase
+        .from('bets')
+        .select(
+          `
+          *,
+          creator:users_profile!creator_id(username),
+          group:groups!group_id(name)
+        `
+        )
+        .eq('group_id', id)
+        .order('created_at', { ascending: false });
+
+      if (betsError) throw betsError;
+
+      // Get bet statistics for each bet
+      const betsWithStats = await Promise.all(
+        (betsData || []).map(async (bet) => {
+          const { data: stats } = await supabase.rpc('get_bet_stats', {
+            p_bet_id: bet.id,
+          });
+
+          return {
+            ...bet,
+            creator_username: (bet.creator as any)?.username || 'Unknown',
+            group_name: (bet.group as any)?.name || 'Unknown',
+            total_over: stats?.total_over || 0,
+            total_under: stats?.total_under || 0,
+            participants_count: stats?.total_participants || 0,
+          };
+        })
+      );
+
+      setBets(betsWithStats);
     } catch (error) {
       console.error('Error fetching group details:', error);
     } finally {
@@ -177,9 +214,17 @@ export function GroupDetail() {
 
         <div className="section">
           <h3>Group Bets</h3>
-          <div className="empty-state">
-            <p>No bets in this group yet</p>
-          </div>
+          {bets.length > 0 ? (
+            <div className="bets-grid">
+              {bets.map((bet) => (
+                <BetCard key={bet.id} bet={bet} />
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state">
+              <p>No bets in this group yet</p>
+            </div>
+          )}
         </div>
       </div>
     </Layout>

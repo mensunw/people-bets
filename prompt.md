@@ -8,6 +8,10 @@ Can u generate a multistep plan.md for Claude to create the "People Bets" projec
 
 IMPORTANT: Do NOT write any code, and there is no need to maintain backward compatibility
 
-Please read phase 7 for /Users/mensun/Documents/projects/people-bets/plan.md
+Please read phase 11 for /Users/mensun/Documents/projects/people-bets/plan.md
 Now think hard and write elegant code that completes this and nothing else
 Do not add backwards compatibility
+
+
+although i see the bet on the account i created it on, i don't see that bet within the group on a different account:
+/Users/mensun/Desktop/Screenshot 2025-10-23 at 2.49.47 PM.png

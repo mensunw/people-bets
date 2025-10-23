@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Layout } from '../components/Layout';
 import { DailyClaim } from '../components/DailyClaim';
 import { CreateBetModal } from '../components/CreateBetModal';
+import { BetsFeed } from '../components/BetsFeed';
 import '../styles/pages.css';
 
 export function Home() {
@@ -50,12 +51,7 @@ export function Home() {
           </div>
         </div>
 
-        <div className="section">
-          <h3>Recent Bets</h3>
-          <div className="empty-state">
-            <p>No bets available yet. Check back soon!</p>
-          </div>
-        </div>
+        <BetsFeed />
 
         <CreateBetModal
           isOpen={isCreateBetModalOpen}

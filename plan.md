@@ -17,27 +17,26 @@ A betting platform where users can create and participate in "Over or Under" bet
 
 ## Phase 6: Groups System (complete)
 
-## Phase 7: Bet Creation System
+## Phase 7: Bet Creation System (complete)
 
-### 7.1 Create Bet UI
-- Create bet creation form/modal
-- Implement bet type selector with "Over or Under" active
-- Add placeholder buttons for future bet types (grayed out, "Coming Soon" label)
-- Style to clearly show which options are available vs coming soon
+## Phase 8: Bet Display & Feed (complete)
 
-### 7.2 Over or Under Bet Form
-- Title input field (required)
-- Description textarea (required)
-- Target number input (required, numeric validation)
-- Betting window end datetime picker (required, must be future)
-- Group selector dropdown (show only groups where user is leader, plus global)
-- Form validation for all required fields
+## Phase 9: Placing Bets (complete)
 
-### 7.3 Bet Creation Logic
-- Validate user is group leader (if private group selected)
-- Create bet record in database
-- Set initial status as 'open'
-- Redirect to bet detail page or show success message
-- Handle errors gracefully
+## Phase 10: Bet Resolution System (complete)
+
+## Phase 11: User Profile & My Bets
+
+### 11.1 Profile Page
+- Display user information (username, member since)
+- Show current currency balance
+- Display betting statistics (total bets, wins, losses, win rate)
+- Show betting history
+
+### 11.2 My Bets Page
+- Tab view: Active Bets, Created Bets, Past Bets
+- Show bets user has participated in
+- Display potential winnings for active bets
+- Show resolved bets with outcomes
 
 ---

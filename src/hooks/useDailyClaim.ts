@@ -53,7 +53,7 @@ export function useDailyClaim() {
 
       if (data?.success) {
         // Refresh user profile to update balance and last_claim_date
-        const { data: profile } = await supabase
+        await supabase
           .from('users_profile')
           .select('*')
           .eq('id', user?.id)

@@ -1,0 +1,112 @@
+/* Resolve Bet Content */
+.resolve-bet-content {
+  padding: 0 2rem 2rem 2rem;
+}
+
+.resolve-info {
+  background: #f7fafc;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.resolve-info h3 {
+  margin: 0 0 0.75rem 0;
+  color: #1a202c;
+  font-size: 1.25rem;
+}
+
+.target-info {
+  color: #718096;
+  font-size: 0.95rem;
+}
+
+.target-info strong {
+  color: #667eea;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Winner Selector */
+.winner-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.winner-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.winner-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.winner-btn.active.over {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  border-color: #48bb78;
+}
+
+.winner-btn.active.under {
+  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+  color: white;
+  border-color: #f56565;
+}
+
+.winner-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.winner-icon {
+  font-size: 2.5rem;
+}
+
+.winner-label {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.winner-desc {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Result Preview */
+.result-preview {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.preview-message.over {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+}
+
+.preview-message.under {
+  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+  color: white;
+}
+
+/* Resolve Bet Button */
+.resolve-bet-btn {
+  width: 100%;
+  margin-top: 1.5rem;
+  font-size: 1.1rem;
+  padding: 1rem 2rem;
+}

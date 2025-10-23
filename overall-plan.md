@@ -293,21 +293,6 @@ A betting platform where users can create and participate in "Over or Under" bet
 
 ---
 
-## Phase 12: Real-time Updates (Optional but Recommended)
-
-### 12.1 Supabase Real-time Subscriptions
-- Subscribe to bets table changes
-- Subscribe to user balance changes
-- Subscribe to group_members changes
-
-### 12.2 UI Updates
-- Auto-update bet feed when new bets are created
-- Update countdown timers in real-time
-- Show live updates when bets are placed
-- Update balance display when currency changes
-
----
-
 ## Phase 13: UI/UX Polish
 
 ### 13.1 Styling & Theming

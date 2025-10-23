@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import type { GroupWithMemberCount } from '../types/index';
@@ -15,7 +14,6 @@ type BetType = 'over_or_under' | 'multiple_choice' | 'yes_no';
 
 export function CreateBetModal({ isOpen, onClose }: CreateBetModalProps) {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [selectedBetType, setSelectedBetType] = useState<BetType>('over_or_under');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -113,7 +111,7 @@ export function CreateBetModal({ isOpen, onClose }: CreateBetModalProps) {
     setLoading(true);
 
     try {
-      const { data: bet, error: betError } = await supabase
+      const { error: betError } = await supabase
         .from('bets')
         .insert({
           title: title.trim(),
@@ -150,8 +148,14 @@ export function CreateBetModal({ isOpen, onClose }: CreateBetModalProps) {
 
   const getMinDateTime = () => {
     const now = new Date();
-    now.setMinutes(now.getMinutes() + 5); // Minimum 5 minutes from now
-    return now.toISOString().slice(0, 16);
+    now.setMinutes(now.getMinutes() + 1); // Minimum 1 minute from now
+    // Format for datetime-local input (YYYY-MM-DDTHH:mm) in local timezone
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
   if (!isOpen) return null;

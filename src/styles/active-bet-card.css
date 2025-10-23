@@ -1,0 +1,245 @@
+.active-bet-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  gap: 1.5rem;
+  border: 2px solid transparent;
+}
+
+.active-bet-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+  border-color: #667eea;
+}
+
+.active-bet-main {
+  flex: 1;
+}
+
+.active-bet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.active-bet-title {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #1a202c;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.active-bet-description {
+  color: #718096;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.active-bet-target {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.active-bet-target strong {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.active-bet-meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: #718096;
+}
+
+.bet-group,
+.bet-creator,
+.bet-participants {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.odds-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.odds-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.odds-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.odds-progress {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.odds-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.odds-fill.over {
+  background: linear-gradient(90deg, #48bb78, #38a169);
+}
+
+.odds-fill.under {
+  background: linear-gradient(90deg, #f56565, #e53e3e);
+}
+
+.bet-countdown {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #fff5f5;
+  border-radius: 8px;
+  color: #c53030;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+/* Right side - Winnings section */
+.active-bet-winnings {
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+}
+
+.your-bet-badge {
+  text-align: center;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.badge-label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #718096;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.bet-side-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.bet-side-badge.over {
+  background: #48bb78;
+  color: white;
+}
+
+.bet-side-badge.under {
+  background: #f56565;
+  color: white;
+}
+
+.bet-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a202c;
+}
+
+.winnings-info {
+  text-align: center;
+}
+
+.winnings-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #718096;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.winnings-amount {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.25rem;
+  line-height: 1;
+}
+
+.winnings-profit {
+  font-size: 0.9rem;
+  color: #48bb78;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.winnings-multiplier {
+  font-size: 0.85rem;
+  color: #718096;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .active-bet-card {
+    flex-direction: column;
+  }
+
+  .active-bet-winnings {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .active-bet-header {
+    flex-direction: column;
+  }
+
+  .active-bet-title {
+    font-size: 1.1rem;
+  }
+
+  .winnings-amount {
+    font-size: 1.5rem;
+  }
+}

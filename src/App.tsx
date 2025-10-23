@@ -7,6 +7,7 @@ import { Home } from './pages/Home';
 import { MyBets } from './pages/MyBets';
 import { Groups } from './pages/Groups';
 import { GroupDetail } from './pages/GroupDetail';
+import { BetDetail } from './pages/BetDetail';
 import { Profile } from './pages/Profile';
 import './styles/auth.css';
 
@@ -46,6 +47,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <GroupDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/bets/:id"
+            element={
+              <ProtectedRoute>
+                <BetDetail />
               </ProtectedRoute>
             }
           />
