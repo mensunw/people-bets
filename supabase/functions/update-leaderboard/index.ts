@@ -63,32 +63,6 @@ Deno.serve(async (req) => {
   }
 });
 
-// Schedule this function to run once per day at midnight UTC
-Deno.cron("update leaderboard", "0 0 * * *", async () => {
-  console.log("Running scheduled daily leaderboard update at", new Date().toISOString());
-
-  try {
-    // Create Supabase client for cron job
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
-      }
-    );
-
-    // Call the update_leaderboard database function
-    const { data, error } = await supabaseClient.rpc('update_leaderboard');
-
-    if (error) {
-      console.error('Cron job error:', error);
-    } else {
-      console.log('Cron job completed successfully:', data);
-    }
-  } catch (err) {
-    console.error('Cron job unexpected error:', err);
-  }
-});
+// Note: Deno.cron is not supported in Supabase Edge Functions
+// For scheduled updates, use Supabase's pg_cron or an external cron service
+// that calls this edge function via HTTP

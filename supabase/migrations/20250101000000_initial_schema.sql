@@ -494,55 +494,63 @@ BEGIN
   LOOP
     -- Calculate stats for this user
     DECLARE
-      stats RECORD;
-      streak_data RECORD;
+      total_bets_count INTEGER;
+      wins_count INTEGER;
+      losses_count INTEGER;
+      total_wagered_amount INTEGER;
+      total_winnings_amount INTEGER := 0;
+      calculated_win_rate DECIMAL(5,2) := 0;
+      current_streak_count INTEGER := 0;
+      best_streak_count INTEGER := 0;
+      resolved_bets_count INTEGER;
     BEGIN
-      -- Get win/loss stats
+      -- Get basic stats
       SELECT
-        COUNT(*) as total_bets,
+        COUNT(*) as total,
         COUNT(*) FILTER (WHERE b.status = 'resolved' AND b.winning_side = ub.side) as wins,
         COUNT(*) FILTER (WHERE b.status = 'resolved' AND b.winning_side != ub.side) as losses,
-        COALESCE(SUM(ub.amount), 0) as total_wagered
-      INTO stats
+        COALESCE(SUM(ub.amount), 0) as wagered
+      INTO total_bets_count, wins_count, losses_count, total_wagered_amount
       FROM user_bets ub
       JOIN bets b ON b.id = ub.bet_id
       WHERE ub.user_id = user_record.id;
 
-      -- Calculate total winnings (proportional distribution)
+      -- Calculate total winnings
+      SELECT COALESCE(SUM(
+        CASE
+          WHEN b.winning_side = ub.side THEN
+            FLOOR((ub.amount::NUMERIC / NULLIF(winning_totals.total, 0)) * pot_totals.total)
+          ELSE 0
+        END
+      ), 0)
+      INTO total_winnings_amount
+      FROM user_bets ub
+      JOIN bets b ON b.id = ub.bet_id
+      LEFT JOIN (
+        SELECT bet_id, SUM(amount) as total
+        FROM user_bets
+        GROUP BY bet_id
+      ) pot_totals ON pot_totals.bet_id = ub.bet_id
+      LEFT JOIN (
+        SELECT bet_id, side, SUM(amount) as total
+        FROM user_bets
+        GROUP BY bet_id, side
+      ) winning_totals ON winning_totals.bet_id = ub.bet_id AND winning_totals.side = b.winning_side
+      WHERE ub.user_id = user_record.id AND b.status = 'resolved';
+
+      -- Count resolved bets for win rate
+      SELECT COUNT(*) INTO resolved_bets_count
+      FROM user_bets ub
+      JOIN bets b ON b.id = ub.bet_id
+      WHERE ub.user_id = user_record.id AND b.status = 'resolved';
+
+      -- Calculate win rate
+      IF resolved_bets_count > 0 THEN
+        calculated_win_rate := (wins_count::DECIMAL / resolved_bets_count) * 100;
+      END IF;
+
+      -- Calculate streaks
       DECLARE
-        total_winnings INTEGER := 0;
-        bet_rec RECORD;
-      BEGIN
-        FOR bet_rec IN
-          SELECT ub.bet_id, ub.amount, ub.side, b.winning_side
-          FROM user_bets ub
-          JOIN bets b ON b.id = ub.bet_id
-          WHERE ub.user_id = user_record.id AND b.status = 'resolved'
-        LOOP
-          IF bet_rec.winning_side = bet_rec.side THEN
-            -- User won this bet, calculate winnings
-            DECLARE
-              total_pot INTEGER;
-              winning_side_total INTEGER;
-            BEGIN
-              SELECT COALESCE(SUM(amount), 0) INTO total_pot
-              FROM user_bets WHERE bet_id = bet_rec.bet_id;
-
-              SELECT COALESCE(SUM(amount), 0) INTO winning_side_total
-              FROM user_bets WHERE bet_id = bet_rec.bet_id AND side = bet_rec.winning_side;
-
-              IF winning_side_total > 0 THEN
-                total_winnings := total_winnings + FLOOR((bet_rec.amount::NUMERIC / winning_side_total) * total_pot);
-              END IF;
-            END;
-          END IF;
-        END LOOP;
-      END;
-
-      -- Calculate current and best streak
-      DECLARE
-        current_streak INTEGER := 0;
-        best_streak INTEGER := 0;
         temp_streak INTEGER := 0;
         bet_outcome RECORD;
       BEGIN
@@ -556,30 +564,14 @@ BEGIN
         LOOP
           IF bet_outcome.won = 1 THEN
             temp_streak := temp_streak + 1;
-            IF temp_streak > best_streak THEN
-              best_streak := temp_streak;
+            IF temp_streak > best_streak_count THEN
+              best_streak_count := temp_streak;
             END IF;
           ELSE
             temp_streak := 0;
           END IF;
         END LOOP;
-
-        current_streak := temp_streak;
-      END;
-
-      -- Calculate win rate
-      DECLARE
-        win_rate DECIMAL(5,2) := 0;
-        resolved_bets INTEGER;
-      BEGIN
-        SELECT COUNT(*) INTO resolved_bets
-        FROM user_bets ub
-        JOIN bets b ON b.id = ub.bet_id
-        WHERE ub.user_id = user_record.id AND b.status = 'resolved';
-
-        IF resolved_bets > 0 THEN
-          win_rate := (stats.wins::DECIMAL / resolved_bets) * 100;
-        END IF;
+        current_streak_count := temp_streak;
       END;
 
       -- Upsert leaderboard entry
@@ -599,15 +591,15 @@ BEGIN
       ) VALUES (
         user_record.id,
         user_record.username,
-        stats.total_bets,
-        stats.wins,
-        stats.losses,
-        win_rate,
-        stats.total_wagered,
-        total_winnings,
-        total_winnings - stats.total_wagered,
-        current_streak,
-        best_streak,
+        total_bets_count,
+        wins_count,
+        losses_count,
+        calculated_win_rate,
+        total_wagered_amount,
+        total_winnings_amount,
+        total_winnings_amount - total_wagered_amount,
+        current_streak_count,
+        best_streak_count,
         NOW()
       )
       ON CONFLICT (user_id) DO UPDATE SET
@@ -621,7 +613,7 @@ BEGIN
         net_profit = EXCLUDED.net_profit,
         current_streak = EXCLUDED.current_streak,
         best_streak = EXCLUDED.best_streak,
-        last_updated = EXCLUDED.last_updated;
+        last_updated = NOW();
 
       updated_count := updated_count + 1;
     END;

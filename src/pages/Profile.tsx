@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { useAuth } from '../contexts/AuthContext';
 import { useUserStats } from '../hooks/useUserStats';
+import { useUserBettingStats } from '../hooks/useUserBettingStats';
 import { supabase } from '../lib/supabase';
 import '../styles/pages.css';
+import '../styles/stats-chart.css';
 
 interface BetHistory {
   id: string;
@@ -22,9 +24,15 @@ interface BetHistory {
 export function Profile() {
   const { user } = useAuth();
   const { stats, loading: statsLoading } = useUserStats();
+  const { stats: bettingStats, loading: bettingStatsLoading, refetch } = useUserBettingStats({
+    userId: user?.id || null,
+    timeRange: 30,
+    enabled: true,
+  });
   const navigate = useNavigate();
   const [history, setHistory] = useState<BetHistory[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
+  const [chartView, setChartView] = useState<'profit' | 'winrate'>('profit');
 
   useEffect(() => {
     fetchHistory();
@@ -106,6 +114,135 @@ export function Profile() {
               <div className="profile-stat-label">Win Rate</div>
             </div>
           </div>
+        </div>
+
+        {/* Betting Performance Chart */}
+        <div className="section">
+          <div className="section-header">
+            <h3>Performance Over Last 30 Days</h3>
+            <div className="chart-controls">
+              <button
+                className={`chart-toggle ${chartView === 'profit' ? 'active' : ''}`}
+                onClick={() => setChartView('profit')}
+              >
+                Cumulative Profit
+              </button>
+              <button
+                className={`chart-toggle ${chartView === 'winrate' ? 'active' : ''}`}
+                onClick={() => setChartView('winrate')}
+              >
+                Win Rate
+              </button>
+              <button className="btn-refresh" onClick={refetch}>
+                ↻ Refresh
+              </button>
+            </div>
+          </div>
+
+          {bettingStatsLoading ? (
+            <div className="loading-spinner">Loading chart data...</div>
+          ) : bettingStats && bettingStats.cumulative_stats.length > 0 ? (
+            <>
+              <div className="stats-chart">
+                {chartView === 'profit' ? (
+                  <div className="chart-container">
+                    {bettingStats.cumulative_stats.map((day, index) => {
+                      const maxProfit = Math.max(
+                        ...bettingStats.cumulative_stats.map((d) => Math.abs(d.cumulative_profit))
+                      );
+                      const height = maxProfit > 0
+                        ? (Math.abs(day.cumulative_profit) / maxProfit) * 100
+                        : 0;
+                      const isPositive = day.cumulative_profit >= 0;
+
+                      return (
+                        <div key={day.date} className="chart-bar-wrapper">
+                          <div className="chart-bar-container">
+                            <div
+                              className={`chart-bar ${isPositive ? 'positive' : 'negative'}`}
+                              style={{ height: `${Math.max(height, 2)}%` }}
+                              title={`${day.date}: ${isPositive ? '+' : ''}${day.cumulative_profit}`}
+                            />
+                          </div>
+                          {index % 5 === 0 && (
+                            <div className="chart-label">
+                              {new Date(day.date).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="chart-container">
+                    {bettingStats.cumulative_stats.map((day, index) => {
+                      const height = day.win_rate;
+
+                      return (
+                        <div key={day.date} className="chart-bar-wrapper">
+                          <div className="chart-bar-container">
+                            <div
+                              className="chart-bar positive"
+                              style={{ height: `${height}%` }}
+                              title={`${day.date}: ${day.win_rate}%`}
+                            />
+                          </div>
+                          {index % 5 === 0 && (
+                            <div className="chart-label">
+                              {new Date(day.date).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Detailed Stats Cards */}
+              <div className="stats-grid">
+                <div className="stat-card">
+                  <div className="stat-card-label">Best Win</div>
+                  <div className="stat-card-value positive">
+                    +{bettingStats.overall_stats.best_win.toLocaleString()}
+                  </div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-card-label">Worst Loss</div>
+                  <div className="stat-card-value negative">
+                    {bettingStats.overall_stats.worst_loss.toLocaleString()}
+                  </div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-card-label">Total Wagered</div>
+                  <div className="stat-card-value">
+                    {bettingStats.overall_stats.total_wagered.toLocaleString()}
+                  </div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-card-label">Net Profit</div>
+                  <div
+                    className={`stat-card-value ${
+                      bettingStats.overall_stats.net_profit >= 0 ? 'positive' : 'negative'
+                    }`}
+                  >
+                    {bettingStats.overall_stats.net_profit >= 0 ? '+' : ''}
+                    {bettingStats.overall_stats.net_profit.toLocaleString()}
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="empty-state">
+              <p>No betting data available for the last 30 days</p>
+            </div>
+          )}
         </div>
 
         <div className="section">

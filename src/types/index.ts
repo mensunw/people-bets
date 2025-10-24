@@ -57,3 +57,46 @@ export interface UserBet {
   amount: number;
   created_at: string;
 }
+
+export interface BetWithDetails extends Bet {
+  creator?: UserProfile;
+  group?: Group;
+  participant_count?: number;
+  total_over?: number;
+  total_under?: number;
+}
+
+export interface UserBettingStats {
+  daily_stats: {
+    date: string;
+    total_wagered: number;
+    total_won: number;
+    net_profit: number;
+    bets_placed: number;
+    bets_won: number;
+  }[];
+  cumulative_stats: {
+    date: string;
+    cumulative_profit: number;
+    cumulative_wagered: number;
+    cumulative_bets: number;
+    win_rate: number;
+  }[];
+  overall_stats: {
+    total_bets: number;
+    total_wins: number;
+    total_losses: number;
+    total_wagered: number;
+    total_winnings: number;
+    net_profit: number;
+    win_rate: number;
+    best_win: number;
+    worst_loss: number;
+  };
+  monthly_performance: {
+    month: string;
+    bets: number;
+    wins: number;
+    profit: number;
+  }[];
+}
