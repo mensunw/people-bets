@@ -138,7 +138,16 @@ Deno.serve(async (req) => {
     // Check client's cached version
     const clientETag = req.headers.get('if-none-match');
 
-    if (clientETag === etag) {
+    // Normalize ETags for comparison (strip W/ prefix and quotes that Cloudflare may add)
+    const normalizeETag = (tag: string | null): string => {
+      if (!tag) return '';
+      return tag.replace(/^W\//, '').replace(/"/g, '');
+    };
+
+    const cleanClientETag = normalizeETag(clientETag);
+    const cleanServerETag = normalizeETag(etag);
+
+    if (cleanClientETag && cleanClientETag === cleanServerETag) {
       // Data hasn't changed, return 304 Not Modified
       return new Response(null, {
         status: 304,
